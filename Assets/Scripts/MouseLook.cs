@@ -12,8 +12,8 @@ public class MouseLook : MonoBehaviour
     {
         _rotation.y += Input.GetAxis("Mouse X");
         _rotation.x += -Input.GetAxis("Mouse Y");
-        _rotation.x = Mathf.Clamp(_rotation.x, -15f, 15f);
-        transform.eulerAngles = new Vector2(0, _rotation.y) * _speed;
-        Camera.main.transform.localRotation = Quaternion.Euler(_rotation.x * _speed, 0, 0);
+        _rotation.x = Mathf.Clamp(_rotation.x, -10f, 5f);
+        _rotation.y = Mathf.Clamp(_rotation.y, -10, 10f);
+        transform.eulerAngles = new Vector2(_rotation.x, _rotation.y) * _speed;
     }
 }
