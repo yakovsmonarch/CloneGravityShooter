@@ -10,10 +10,13 @@ public class MouseLook : MonoBehaviour
 
     private void Update()
     {
-        _rotation.y += Input.GetAxis("Mouse X");
-        _rotation.x += -Input.GetAxis("Mouse Y");
-        _rotation.x = Mathf.Clamp(_rotation.x, -10f, 5f);
-        _rotation.y = Mathf.Clamp(_rotation.y, -10, 10f);
-        transform.eulerAngles = new Vector2(_rotation.x, _rotation.y) * _speed;
+        if (Input.GetMouseButton(0))
+        {
+            _rotation.y += Input.GetAxis("Mouse X");
+            _rotation.x += -Input.GetAxis("Mouse Y");
+            _rotation.x = Mathf.Clamp(_rotation.x, -10f, 5f);
+            _rotation.y = Mathf.Clamp(_rotation.y, -10, 10f);
+            transform.eulerAngles = new Vector2(_rotation.x, _rotation.y) * _speed;
+        }
     }
 }
