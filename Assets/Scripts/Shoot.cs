@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Shoot : MonoBehaviour
 {
+    [SerializeField] private Transform _targetPoint;
+
     private enum FiringState
     {
         None,
@@ -16,15 +18,29 @@ public class Shoot : MonoBehaviour
     private float _speed = 20f;
     private Transform _currentEnemy;
     private float _thrust = 2500f;
+    private RaycastHit _hitInfo;
 
     private void Update()
     {
+        Debug.DrawRay(transform.position, transform.forward * 100000, Color.red);
+
         switch (firingState)
         {
             case FiringState.None:
-                if (Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButton(0))
                 {
-                    firingState = FiringState.Gravity;
+                    Vector3 fwd = transform.TransformDirection(Vector3.forward);
+                    
+                    if (Physics.Raycast(transform.position, fwd, out _hitInfo, 1000000))
+                    {
+                        _currentEnemy = _hitInfo.collider.gameObject.transform;
+                        if (_currentEnemy.gameObject.TryGetComponent<Enemy>(out Enemy enemy))
+                        {
+                            _currentEnemy.GetComponent<Rigidbody>().useGravity = false;
+                            firingState = FiringState.Gravity;
+                        }
+                    }
+
                 }
                 break;
             case FiringState.Gravity:
@@ -34,7 +50,7 @@ public class Shoot : MonoBehaviour
                 }
                 else
                 {
-                    BeamEmission();
+                    BeamEmission(_currentEnemy, _hitInfo);
                 }
                 break;
             case FiringState.AntiGravity:
@@ -46,27 +62,22 @@ public class Shoot : MonoBehaviour
 
     private void PushGun()
     {
+        if(_currentEnemy == null)
+        {
+            return;
+        }
+
         Rigidbody body = _currentEnemy.GetComponent<Rigidbody>();
         if (body != null)
         {
             body.AddForce(transform.forward * _thrust);
+            body.useGravity = true;
+            _currentEnemy = null;
         }
     }
 
-    private void BeamEmission()
+    private void BeamEmission(Transform currentEnemy, RaycastHit hitInfo)
     {
-        RaycastHit hitInfo;
-        Vector3 fwd = transform.TransformDirection(Vector3.forward);
-        Debug.DrawRay(transform.position, transform.forward * 10, Color.red);
-
-        if(Physics.Raycast(transform.position, fwd, out hitInfo, 1000000))
-        {
-            _currentEnemy = hitInfo.collider.gameObject.transform;
-            
-            if (_currentEnemy.gameObject.TryGetComponent<Enemy>(out Enemy enemy))
-            {
-                _currentEnemy.position = Vector3.MoveTowards(hitInfo.collider.gameObject.transform.position, transform.position, _speed * Time.deltaTime);
-            }
-        }
+        currentEnemy.position = Vector3.MoveTowards(hitInfo.collider.gameObject.transform.position, _targetPoint.position, _speed * Time.deltaTime);
     }
 }
