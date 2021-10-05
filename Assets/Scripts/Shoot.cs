@@ -13,8 +13,9 @@ public class Shoot : MonoBehaviour
     }
 
     private FiringState firingState = FiringState.None;
-    private float _speed = 5f;
+    private float _speed = 20f;
     private Transform _currentEnemy;
+    private float _thrust = 2500f;
 
     private void Update()
     {
@@ -45,7 +46,11 @@ public class Shoot : MonoBehaviour
 
     private void PushGun()
     {
-        
+        Rigidbody body = _currentEnemy.GetComponent<Rigidbody>();
+        if (body != null)
+        {
+            body.AddForce(transform.forward * _thrust);
+        }
     }
 
     private void BeamEmission()
@@ -54,7 +59,7 @@ public class Shoot : MonoBehaviour
         Vector3 fwd = transform.TransformDirection(Vector3.forward);
         Debug.DrawRay(transform.position, transform.forward * 10, Color.red);
 
-        if(Physics.Raycast(transform.position, fwd, out hitInfo, 100))
+        if(Physics.Raycast(transform.position, fwd, out hitInfo, 1000000))
         {
             _currentEnemy = hitInfo.collider.gameObject.transform;
             
