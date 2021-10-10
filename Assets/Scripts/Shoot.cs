@@ -17,7 +17,7 @@ public class Shoot : MonoBehaviour
     private FiringState firingState = FiringState.None;
     private float _speed = 20f;
     private Transform _currentEnemy;
-    private float _thrust = 2500f;
+    private float _thrust = 2000f;
     private RaycastHit _hitInfo;
 
     private void Update()
