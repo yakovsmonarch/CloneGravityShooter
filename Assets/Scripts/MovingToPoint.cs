@@ -7,7 +7,7 @@ public class MovingToPoint : MonoBehaviour
 {
     [SerializeField] private Transform[] _points;
     [SerializeField] private Transform _player;
-    [SerializeField] private float _speed = 10f;
+    [SerializeField] private float _speed = 5.0f;
 
     private Transform _targetPoint;
     private int _currentPoint = 0;
@@ -37,11 +37,8 @@ public class MovingToPoint : MonoBehaviour
                 break;
             case StateMoving.Rotation:
                 RotationToTarget();
-                if(_player.rotation.y >= 90f)
-                {
-                    _stateMoving = StateMoving.None;
-                    Debug.Log("stop rotation");
-                }
+                
+                //_stateMoving = StateMoving.None;
                 break;
         }
     }
@@ -49,7 +46,9 @@ public class MovingToPoint : MonoBehaviour
     private void RotationToTarget()
     {
         Vector3 rotation = _targetPoint.position - _player.position;
-        _player.forward = Vector3.MoveTowards(_player.forward, rotation, 5 * Time.deltaTime);
-        
+        Vector3 newDirection = Vector3.RotateTowards(_player.forward, rotation, _speed * Time.deltaTime, 0.0f);
+        _player.rotation = Quaternion.LookRotation(newDirection);
+
+        Debug.Log($"{newDirection.x}, {newDirection.y}, {newDirection.z}");
     }
 }
